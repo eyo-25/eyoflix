@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/eyoflix/static/js/main.dc5a3aae.js",
+    "index.html": "/eyoflix/index.html",
+    "main.dc5a3aae.js.map": "/eyoflix/static/js/main.dc5a3aae.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.dc5a3aae.js"
+  ]
+}
