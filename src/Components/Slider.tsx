@@ -340,7 +340,7 @@ export function MovieSlider({type}:{type:Types}) {
                                   {clickedMovie.overview}
                                 </BigOverview>
                                 <BigBottom>
-                                    Realesa <span>
+                                    Realese <span>
                                     {new Date(clickedMovie?.release_date).getFullYear()}
                                     </span>
                                     <BigGenres>Genres {detailData?.genres.map((genres)=>

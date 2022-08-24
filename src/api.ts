@@ -64,6 +64,13 @@ export interface ITvShow {
     vote_count: number
 }
 
+export interface IGetMoviesDetail {
+  page: number;
+  results: IMovie[];
+  total_pages: number;
+  total_results: number;
+}
+
 export interface IGetMovieDetail {
   adult: boolean;
   backdrop_path: string;
@@ -101,11 +108,11 @@ export async function getTvShows(type: TvTypes) {
   ).json();
 }
 
-export async function getSearchResult({category, keyword}:{category:string, keyword:string|null}) {
+export async function getSearchResult({category, keyword, page}:{category:string, keyword:string|null, page:number}) {
   return (
     await fetch(
       `
-      ${BASE_PATH}/search/${category}?api_key=${API_KEY}&language=en-US&query=${keyword}&page=1&include_adult=false
+      ${BASE_PATH}/search/${category}?api_key=${API_KEY}&language=en-US&query=${keyword}&page=${page}&include_adult=false
       `
     )
   ).json();

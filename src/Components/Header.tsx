@@ -110,6 +110,7 @@ interface IForm {
 export function Header() {
     const tvMatch = useMatch("/tvs")
     const homeMatch = useMatch("/")
+    const searchMach = useMatch(`/search/:category`)
     const inputAnimation = useAnimation();
     const [searchOpen, setSearchOpen] = useState(false)
     const { scrollY } = useScroll()
@@ -148,9 +149,13 @@ export function Header() {
     }
     const { register, handleSubmit } = useForm<IForm>()
     const onValid = (data:IForm) => {
-      console.log(data)
-      navigate(`/search?keyword=${data.keyword}`)
+      homeMatch ?(
+        navigate(`search/?category=movies&keyword=${data.keyword}`)
+      ) : (
+        navigate(`search/?category=tvs&keyword=${data.keyword}`)
+      )
     }
+    
     return (
         <Nav variants={navVariants} animate={navAnimation}>
             <Col>
@@ -172,6 +177,9 @@ export function Header() {
                     <Item>
                       <Link to={'/tvs'}>TvShow{tvMatch? <Circle layoutId="circle"/>: null}</Link>
                     </Item>
+                    <Item>
+                      <Link to={'/search/movies'}>Search{searchMach? <Circle layoutId="circle"/>: null}</Link>
+                    </Item>
                 </Items>
             </Col>
             <Col>
@@ -180,7 +188,7 @@ export function Header() {
                   {...register("keyword", {required:true, minLength: 2})}
                   initial={{scaleX:0}}
                   animate={inputAnimation}
-                  placeholder="Search for Movie"
+                  placeholder="Search for movie or tv show"
                   transition={{type: "linear"}}
                 />
                 <Svg
