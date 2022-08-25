@@ -1,11 +1,12 @@
+import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useMatch } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import MovieSearch from "../Components/MovieSearch";
-import { TvSearch } from "../Components/TvSearch";
-import { Category } from "../enums";
+import { BigBottom, BigCover, BigGenres, BigLang, BigMovie, BigOverview, BigTitle, Overlay } from "../Components/Slider";
+import TvShowSearch from "../Components/TvSearch";
 
 export const Container = styled.div`
   display: flex;
@@ -89,52 +90,6 @@ export const ContentsWrapper = styled.div`
     max-width: 2400px;
 `
 
-export const Content = styled.div`
-    width: 220px;
-    border-radius: 7px;
-    margin-right: 20px;
-    margin-bottom: 45px;
-`
-
-export const ContentImg = styled.div`
-    background: url(https://image.tmdb.org/t/p/w300/bZLrpWM065h5bu1msUcPmLFsHBe.jpg) center center / cover no-repeat;
-    height: 340px;
-    transition: all 0.2s linear 0s;
-    border-radius: 7px;
-`
-
-export const ContentInfoBox = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-`
-
-export const ContentTitle = styled.span`
-    color: white;
-    font-size: 15px;
-    margin-top: 12px;
-    font-weight: bold;
-`
-export const ContentInfo = styled.div`
-    margin-top: 11px;
-    display: flex;
-    flex-direction: column;
-
-    span{
-        color: gray;
-        font-size: 14px;
-        margin-right: 10px;
-    }
-`
-
-export const ContentRate = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5px;
-`
-
 interface IForm {
     keyword: string;
 }
@@ -145,22 +100,17 @@ function Search() {
     const keywordMach = useMatch(`/search/movies/:keyword`)
     const keywordTvsMach = useMatch(`/search/tvs/:keyword`)
 
-    const location = useLocation();
-    const srcParams = new URLSearchParams(location.search);
     const [keyword, setKeyword] = useState("")
-    const [search, setSearch] = useState(false)
     const { register, handleSubmit } = useForm<IForm>()
     const navigate = useNavigate();
     const onValid = (data:IForm) => {
         setKeyword(data.keyword)
-        setSearch(true)
         searchMach || keywordMach ? (
             navigate(`/search/movies/${data.keyword}`)
         ) : (
-            navigate(`/search//${data.keyword}`)
+            navigate(`/search/tvs/${data.keyword}`)
         )
     }
-    console.log(keyword)
 
     return (
         <>
@@ -177,17 +127,16 @@ function Search() {
                 </SearchForm>
                 <TabMenu>
                     <TabList isActive={searchMach !== null || keywordMach !== null }>
-                        <Link to={'/search/movies'}>영화</Link>
+                        <Link to={ keyword=="" ? `/search/movies` : `/search/movies/${keyword}`}>영화</Link>
                     </TabList>
                     <TabList isActive={searchTvsMach !== null || keywordTvsMach !== null }>
-                        <Link to={'/search/tvs'}>TV 프로그램</Link>
+                        <Link to={ keyword=="" ? `/search/tvs` : `/search/tvs/${keyword}` }>TV 프로그램</Link>
                     </TabList>
                 </TabMenu>
                 <ContentsContainer>
                     <ContentsWrapper>
-                        {search ?
-                            <MovieSearch keyword={keyword}></MovieSearch>
-                        : null}
+                        {(keywordMach) && <MovieSearch></MovieSearch>}
+                        {(keywordTvsMach) && <TvShowSearch></TvShowSearch>}
                     </ContentsWrapper>
                 </ContentsContainer>
             </Container>

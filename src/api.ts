@@ -64,6 +64,14 @@ export interface ITvShow {
     vote_count: number
 }
 
+export interface IGetTvShowsDetail {
+  page: number;
+  results: ITvShow[];
+  total_pages: number;
+  total_results: number;
+}
+
+
 export interface IGetMoviesDetail {
   page: number;
   results: IMovie[];
