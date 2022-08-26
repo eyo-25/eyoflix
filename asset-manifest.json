@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/eyoflix/static/js/main.1ecda27b.js",
+    "main.js": "/eyoflix/static/js/main.b375fa22.js",
     "index.html": "/eyoflix/index.html",
-    "main.1ecda27b.js.map": "/eyoflix/static/js/main.1ecda27b.js.map"
+    "main.b375fa22.js.map": "/eyoflix/static/js/main.b375fa22.js.map"
   },
   "entrypoints": [
-    "static/js/main.1ecda27b.js"
+    "static/js/main.b375fa22.js"
   ]
 }
