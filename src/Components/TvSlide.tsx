@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { getTvShows, ITvShowsResult, } from "../api";
 import { TvTypes } from "../enums";
 import { makeImagePath, useWindowDimensions } from "../utiles";
-import { Before, BigCover, BigMovie, BigOverview, BigTitle, Box, BoxVariants, Info, infovariants, Next, Overlay, Row, rowVariants, SliderContainer, SliderTitle, SliderWrapper } from "./Slider";
+import { Before, BigCover, BigMovie, BigOverview, BigTitle, Box, BoxContainer, BoxVariants, HoverBox, HoverDetailBtn, InfoBox, InfoRate, InfoTextBox, InfoTitle, infovariants, Next, Overlay, Row, rowVariants, SliderContainer, SliderTitle, SliderWrapper } from "./Slider";
 
 const offset = 6;
 
@@ -53,7 +53,12 @@ export function TvSlider({type}:{type:TvTypes}) {
       <>
         <SliderWrapper>
             <SliderContainer>
-                <SliderTitle>{type}</SliderTitle>
+                <SliderTitle>
+                  {type === "airing_today" && "오늘 방영하는 프로그램"}
+                  {type === "on_the_air" && "현재 방영중"}
+                  {type === "popular" && "인기 프로그램"}
+                  {type === "top_rated" && "평점높은 프로그램"}
+                </SliderTitle>
                 <AnimatePresence custom={{width, clickReverse}} initial={false} onExitComplete={toggleLeaving}>
                     <Row
                     custom={{width, clickReverse}} 
@@ -65,19 +70,33 @@ export function TvSlider({type}:{type:TvTypes}) {
                     key={index}
                     >
                     {data?.results.slice(1).slice(offset*index, offset*index+offset).map((tv, i) =>
-                        <Box
-                        layoutId={type + tv.id}
-                        onClick={()=> onBoxClicked(tv.id)}
-                        variants={BoxVariants}
-                        initial="normal"
-                        whileHover="hover"
-                        transition={{type:"tween"}}
-                        bgphoto={makeImagePath(tv.backdrop_path || tv.poster_path, "w500")}
-                        key={type + tv.id}>
-                            <Info variants={infovariants}>
-                            <h4>{tv.name}</h4>
-                            </Info>
-                        </Box>
+                        <BoxContainer
+                          variants={BoxVariants}
+                          initial="normal"
+                          whileHover="hover"
+                          transition={{type:"tween"}}
+                        >
+                          <Box
+                          layoutId={type + tv.id}
+                          onClick={()=> onBoxClicked(tv.id)}
+                          transition={{type:"tween"}}
+                          bgphoto={makeImagePath(tv.poster_path || tv.backdrop_path, "w500")}
+                          key={type + tv.id}>
+                                <HoverBox variants={infovariants}>
+                                  <h4>{tv.overview}</h4>
+                                  <HoverDetailBtn>상세정보</HoverDetailBtn>
+                                </HoverBox>
+                          </Box>
+                          <InfoBox>
+                              <InfoTitle>{tv.name}</InfoTitle>
+                              <InfoTextBox>
+                                    <span>개봉일 {tv.first_air_date}</span>
+                                  <InfoRate>
+                                    <span>⭐ {tv.vote_average.toFixed(1)}</span>
+                                  </InfoRate>
+                              </InfoTextBox>
+                          </InfoBox>
+                          </BoxContainer>
                     )}
                     </Row>
                 </AnimatePresence>
@@ -123,8 +142,12 @@ export function TvSlider({type}:{type:TvTypes}) {
                                 />
                                 <BigTitle>{clickedTvshow.name}</BigTitle>
                                 <BigOverview>
-                                  <h4>Summary</h4>
-                                  {clickedTvshow.overview}
+                                  {clickedTvshow.overview ? (
+                                    <>
+                                      <h4>줄거리</h4>
+                                      {clickedTvshow.overview}
+                                    </>
+                                  ) : null}
                                 </BigOverview>
                             </>}
                         </BigMovie>

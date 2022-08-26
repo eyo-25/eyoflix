@@ -103,7 +103,7 @@ export interface IGetMovieDetail {
 export async function getMovies(type: Types) {
     return (
       await fetch(
-        `${BASE_PATH}/movie/${type}?api_key=${API_KEY}&language=en-US&page=1&region=kr`
+        `${BASE_PATH}/movie/${type}?api_key=${API_KEY}&language=ko&page=1&region=kr`
       )
     ).json();
 }
@@ -111,7 +111,7 @@ export async function getMovies(type: Types) {
 export async function getTvShows(type: TvTypes) {
   return (
     await fetch(
-      `${BASE_PATH}/tv/${type}?api_key=${API_KEY}&language=en-US&page=1`
+      `${BASE_PATH}/tv/${type}?api_key=${API_KEY}&language=ko`
     )
   ).json();
 }
@@ -120,7 +120,7 @@ export async function getSearchResult({category, keyword, page}:{category:string
   return (
     await fetch(
       `
-      ${BASE_PATH}/search/${category}?api_key=${API_KEY}&language=en-US&query=${keyword}&page=${page}&include_adult=false
+      ${BASE_PATH}/search/${category}?api_key=${API_KEY}&language=ko&query=${keyword}&page=${page}&include_adult=false
       `
     )
   ).json();
@@ -129,7 +129,7 @@ export async function getSearchResult({category, keyword, page}:{category:string
 export async function getMovieDetail(movieId: string | undefined) {
   return (
     await fetch(
-      `${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=en-US`
+      `${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=ko`
     )
   ).json();
 }
@@ -137,7 +137,7 @@ export async function getMovieDetail(movieId: string | undefined) {
 export async function getTvShowDetail(tvId: string | undefined) {
   return (
     await fetch(
-      `${BASE_PATH}/tv/${tvId}?api_key=${API_KEY}&language=en-US`
+      `${BASE_PATH}/tv/${tvId}?api_key=${API_KEY}&language=ko`
     )
   ).json();
 }

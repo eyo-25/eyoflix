@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getSearchResult, IGetTvShowsDetail } from "../api";
 import { makeImagePath } from "../utiles";
+import Loader from "./Loader";
 import { BoxVariants, Content, ContentImg, ContentInfo, ContentInfoBox, ContentRate, ContentTitle, Cover, CoverVariants, DetailBtn } from "./MovieSearch";
 
 function TvShowSearch() {
@@ -19,7 +20,7 @@ function TvShowSearch() {
     console.log(keyword)
 
     return(
-      noData ? null : (
+      noData ? <Loader>Now Loading...</Loader> : (
         <>
           {data?.results.map((tvshow)=>
               <Content

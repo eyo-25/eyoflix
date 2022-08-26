@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components"
 import { getSearchResult, IGetMoviesDetail } from "../api";
 import { makeImagePath } from "../utiles";
+import Loader from "./Loader";
 
 export const Content = styled(motion.div)`
     width: 220px;
@@ -153,7 +154,7 @@ function MovieSearch() {
     const noData = dataFirst?.total_pages!! < 1;
 
     return(
-      noData ? null : (
+      noData ? <Loader>Now Loading...</Loader> : (
         <>
           {dataFirst?.results.map((movie)=>
               <Content

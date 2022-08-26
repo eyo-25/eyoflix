@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getMovieDetail, getMovies, IGetMovieDetail, IGetMoviesResult } from "../api";
@@ -10,8 +10,8 @@ import { makeImagePath, useWindowDimensions } from "../utiles";
 export const SliderTitle = styled.h4`
     text-transform: uppercase;
     font-size: 30px;
-    font-weight: 700;
-    margin-bottom: 25px;
+    font-weight: 500;
+    padding-bottom: 20px;
 `
 
 export const SliderWrapper = styled.div`
@@ -21,13 +21,20 @@ export const SliderWrapper = styled.div`
 export const SliderContainer = styled.div`
     position: relative;
     top: -200px;
-    height: 300px;
-    margin-bottom: 20px;
     width: 100%;
     overflow-y: hidden;
     -ms-overflow-style: none;
     &::-webkit-scrollbar{
       display:none;
+    }
+    @media screen and (min-width: 43rem) {
+      height: 400px;
+    }
+    @media screen and (min-width: 62rem) {
+      height: 500px;
+    }
+    @media screen and (min-width: 82rem) {
+      height: 600px;
     }
 `
 
@@ -37,16 +44,26 @@ export const Row = styled(motion.div)`
     gap: 10px;
     width: 100%;
     position: absolute;
+    @media screen and (min-width: 43rem) {
+      grid-template-columns: repeat(4,1fr);
+    }
+    @media screen and (min-width: 62rem) {
+      grid-template-columns: repeat(5,1fr);
+    }
+    @media screen and (min-width: 82rem) {
+      grid-template-columns: repeat(6,1fr);
+    }
 `
 
 export const Box = styled(motion.div)<{ bgphoto: string }>`
     background-color: white;
-    height: 200px;
+    height: 470px;
     font-size: 66px;
     background-size: cover;
     background-position: center center;
     background-image: url(${(props) => props.bgphoto});
     position: relative;
+    border-radius: 4px;
     cursor: pointer;
     &:first-child {
         transform-origin: center left;
@@ -54,20 +71,89 @@ export const Box = styled(motion.div)<{ bgphoto: string }>`
     &:last-child {
         transform-origin: center right;
     }
+    @media screen and (min-width: 43rem) {
+      height: 200px;
+    }
+    @media screen and (min-width: 62rem) {
+      height: 300px;
+    }
+    @media screen and (min-width: 82rem) {
+      height: 470px;
+    }
 `
 
-export const Info = styled(motion.div)`
-    padding: 10px;
-    background-color: ${(props) => props.theme.black.darker};
+export const HoverBox = styled(motion.div)`
+    padding: 70px 40px;
+    background-color: rgba(0, 0, 0, 0.8);
     opacity: 0;
-    position: absolute;
+    position: relative;
     width: 100%;
-    bottom: 0;
-    h4 {
-        text-align: center;
-        font-size: 18px;
-        font-weight: 600;
+    height: 100%;
+    @media screen and (min-width: 43rem) {
+      padding: 20px 10px;
     }
+    @media screen and (min-width: 62rem) {
+      padding: 50px 40;
+    }
+    @media screen and (min-width: 82rem) {
+      padding: 70px 40px;
+    }
+    h4 {
+        line-height: 1.8;
+        letter-spacing: -1px;
+        color: white;
+        text-align: center;
+        font-size: 15px;
+        font-weight: 500;
+        
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 7;
+        -webkit-box-orient: vertical;
+        @media screen and (min-width: 43rem) {
+          -webkit-line-clamp: 3;
+        }
+        @media screen and (min-width: 62rem) {
+          -webkit-line-clamp: 5;
+        }
+        @media screen and (min-width: 82rem) {
+          -webkit-line-clamp: 7;
+        }
+    }
+`
+
+export const HoverDetailBtn = styled(motion.button)`
+    position: absolute;
+    width: 50%;
+    display: flex;
+    text-align: center;
+    bottom: 40px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    justify-content: center;
+    font-weight: 600;
+    padding: 8px 15px;
+    color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+    background: none;
+    cursor: pointer;
+    &:hover{
+      color: rgb(61, 145, 255);
+      border: 1px solid rgb(61, 145, 255);
+      transition: all 0.2s linear 0s;
+    }
+        @media screen and (min-width: 43rem) {
+          width: 70%;
+        }
+        @media screen and (min-width: 62rem) {
+          width: 60%;
+        }
+        @media screen and (min-width: 82rem) {
+          width: 50%;
+        }
 `
 
 export const rowVariants = {
@@ -88,12 +174,11 @@ export const BoxVariants = {
     scale: 1,
   },
   hover:{
-    y:-35,
-    zIndex: 99,
-    scale: 1.3,
+    zIndex: 10,
+    scale: 1.05,
+    y: -20,
     transition: {
-      delay: 0.5,
-      duration: 0.4
+      duration: 0.3
     }
   }
 }
@@ -144,50 +229,83 @@ export const BigCover = styled.div`
 
 export const BigTitle = styled.h3`
   padding: 20px 25px;
-  position: relative;
-  top: -75px;
+  position: absolute;
+  bottom: 0;
   font-weight: 400;
-  font-size: 30px;
   color: ${(props) => props.theme.white.lighter};
+  font-size: 1.25rem;
+  @media screen and (min-width: 43rem) {
+    font-size: 1.3rem;
+  }
+  @media screen and (min-width: 62rem) {
+    font-size: 1.6rem;
+  }
+  @media screen and (min-width: 82rem) {
+    font-size: 2em;
+  }
+  p{
+    font-size: 16px;
+    margin-top: 8px;
+    font-weight: 300;
+  }
 `
 export const BigOverview = styled.p`
   position: relative;
-  top: -70px;
-  padding: 20px 25px;
+  line-height: 1.6;
+  padding: 30px 25px;
   color: ${(props) => props.theme.white.lighter};
+  font-size: 14px;
   h4{
     font-weight: 500;
-    margin-bottom: 10px;
-    font-size: 20px;
+    margin-bottom: 8px;
+    font-size: 18px;
   }
 `
 
 export const Before = styled(motion.div)`
-    height: 200px;
+    height: 470px;
     position: absolute;
     z-index: 2;
     display: flex;
     align-items: center;
-    padding: 0 25px;
+    padding: 0 30px;
     background: linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
     svg{
         width: 20px;
         cursor: pointer;
     }
+    @media screen and (min-width: 43rem) {
+      height: 200px;
+    }
+    @media screen and (min-width: 62rem) {
+      height: 300px;
+    }
+    @media screen and (min-width: 82rem) {
+      height: 470px;
+    }
 `
 
 export const Next = styled(motion.div)`
-    height: 200px;
+    height: 470px;
     position: absolute;
     right: 0;
     z-index: 2;
     display: flex;
     align-items: center;
-    padding: 0 25px;
+    padding: 0 30px;
     background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
     svg{
         width: 20px;
         cursor: pointer;
+    }
+    @media screen and (min-width: 43rem) {
+      height: 200px;
+    }
+    @media screen and (min-width: 62rem) {
+      height: 300px;
+    }
+    @media screen and (min-width: 82rem) {
+      height: 470px;
     }
 `
 
@@ -212,13 +330,62 @@ export const BigLang = styled.p`
     }
 `
 
-export const BigGenres = styled.p`
+export const BigGenres = styled.p``
 
+export const InfoBox = styled.div`
+  margin-top: 10px;
 `
 
-const offset = 6;
+export const BoxContainer = styled(motion.div)`
+    text-align: center;
+`
+
+export const InfoTitle = styled.span`
+    color: white;
+    font-size: 15px;
+    margin-top: 12px;
+    font-weight: bold;
+    /* 줄임말 설정  */
+    width: 50px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+`
+
+export const InfoTextBox = styled.div`
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+
+    span{
+        color: gray;
+        font-size: 14px;
+    }
+`
+
+export const InfoRate = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+`
 
 export function MovieSlider({type}:{type:Types}) {
+    const [offset,setOffset] = useState(6);
+    useEffect(()=>{
+      const resizeHandler = () => {
+        if(window.innerWidth > 688){
+          setOffset(4)
+        }
+        if(window.innerWidth > 992){
+          setOffset(5)
+        }
+        if(window.innerWidth > 1312){
+          setOffset(6)
+        }
+      }
+      resizeHandler();
+    },[window.innerWidth]);
     const { data } = useQuery<IGetMoviesResult>(["movies", type], ()=>getMovies(type))
     const [index, setIndex] = useState(0)
     const [leaving, setLeaving] =useState(false)
@@ -261,12 +428,17 @@ export function MovieSlider({type}:{type:Types}) {
     // 또한 <AnimatePresence onExitComplete={()=>setLeaving(false)}>으로 애니메이션(슬라이드)이 끝났을때 초기화
     // <AnimatePresence initial={false} 사용시 페이지 로드시 애니메이션(initial)이 발생되지않는다
     const {scrollY} = useScroll()
-
+    console.log(clickedMovie)
     return(
       <>
         <SliderWrapper>
             <SliderContainer>
-                <SliderTitle>{type}</SliderTitle>
+                <SliderTitle>
+                  {type === "popular" && "인기 영화"}
+                  {type === "now_playing" && "현재상영중"}
+                  {type === "top_rated" && "평점높은 영화"}
+                  {type === "upcoming" && "상영 예정"}
+                </SliderTitle>
                 <AnimatePresence custom={{width, clickReverse}} initial={false} onExitComplete={toggleLeaving}>
                     <Row
                     custom={{width, clickReverse}} 
@@ -278,19 +450,32 @@ export function MovieSlider({type}:{type:Types}) {
                     key={index}
                     >
                     {data?.results.slice(1).slice(offset*index, offset*index+offset).map((movie, i) =>
-                        <Box
-                        layoutId={type + movie.id}
-                        onClick={()=> onBoxClicked(movie.id)}
-                        variants={BoxVariants}
-                        initial="normal"
-                        whileHover="hover"
-                        transition={{type:"tween"}}
-                        bgphoto={makeImagePath(movie.backdrop_path || movie.poster_path, "w500")}
-                        key={type + movie.id}>
-                            <Info variants={infovariants}>
-                            <h4>{movie.title}</h4>
-                            </Info>
-                        </Box>
+                        <BoxContainer
+                          variants={BoxVariants}
+                          initial="normal"
+                          whileHover="hover"
+                          transition={{type:"tween"}}
+                        >
+                          <Box
+                            layoutId={type + movie.id}
+                            onClick={()=> onBoxClicked(movie.id)}
+                            bgphoto={makeImagePath(movie.poster_path || movie.backdrop_path, "w500")}
+                            key={type + movie.id}>
+                                <HoverBox variants={infovariants}>
+                                  <h4>{movie.overview}</h4>
+                                  <HoverDetailBtn>상세정보</HoverDetailBtn>
+                                </HoverBox>
+                          </Box>
+                          <InfoBox>
+                              <InfoTitle>{movie.title}</InfoTitle>
+                              <InfoTextBox>
+                                    <span>개봉일 {movie.release_date}</span>
+                                  <InfoRate>
+                                    <span>⭐ {movie.vote_average.toFixed(1)}</span>
+                                  </InfoRate>
+                              </InfoTextBox>
+                          </InfoBox>
+                        </BoxContainer>
                     )}
                     </Row>
                 </AnimatePresence>
@@ -314,7 +499,7 @@ export function MovieSlider({type}:{type:Types}) {
                 </Next>
             </SliderContainer>
         </SliderWrapper>
-        <AnimatePresence >
+        <AnimatePresence>
         { bigMovieMatch?
                   <>
                         <Overlay
@@ -333,10 +518,14 @@ export function MovieSlider({type}:{type:Types}) {
                                         url(${makeImagePath(clickedMovie.backdrop_path || clickedMovie.poster_path,"w500")})
                                         `
                                     }}
-                                />
-                                <BigTitle>{clickedMovie.title}</BigTitle>
+                                >
+                                  <BigTitle>
+                                    <span>{clickedMovie.title}</span>
+                                    <p>⭐️ {clickedMovie?.vote_average}</p>
+                                  </BigTitle>
+                                </BigCover>
                                 <BigOverview>
-                                  <h4>Summary</h4>
+                                  <h4>줄거리</h4>
                                   {clickedMovie.overview}
                                 </BigOverview>
                                 <BigBottom>
