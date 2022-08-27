@@ -13,8 +13,8 @@ const Nav = styled(motion.nav)`
   width: 100%;
   top: 0;
   font-size: 14px;
-  padding: 20px 40px;
-  z-index: 100;
+  padding: 0 40px;
+  z-index: 10;
 `;
 
 const Col = styled.div`
@@ -39,33 +39,19 @@ const Items = styled.ul`
 `;
 
 const Item = styled.li<{isActive:boolean}>`
-  margin-left: 40px;
-  color: ${(props) => props.isActive ? "rgba(227, 9, 20,1)" :props.theme.white.darker};
+  padding: 15px 30px;
+  color: ${(props) => props.isActive ? "rgb(227, 9, 20)" :props.theme.white.lighter};
   transition: color 0.3s ease-in-out;
   position: relative;
   display: flex;
   justify-content: center;
   flex-direction: column;
-  &:hover {
-    scale: 1.2;
-    transition: scale 0.3s linear;
-  }
+  box-sizing: border-box;
+  border-bottom: ${props=>props.isActive ? "2.5px solid rgb(227, 9, 20)" : null};
   a {
     font-weight: 600;
     font-size: 17px;
   }
-`;
-
-const Circle = styled(motion.span)`
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 5px;
-  bottom: -10px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  background-color: ${(props) => props.theme.red};
 `;
 
 const navVariants = {
@@ -101,15 +87,11 @@ const logoVariants = {
   }
 };
 
-interface IForm {
-  keyword: string;
-}
-
 export function Header() {
     const tvMatch = useMatch("/tvs")
     const homeMatch = useMatch("/")
-    const searchMach = useMatch(`/search`)
-    const searchKeywordMach = useMatch(`/search/:keyword`)
+    const searchMach = useMatch(`/search/:types`)
+    const searchKeywordMach = useMatch(`/search/:types/:keyword`)
     const movieIdMatch = useMatch(`/movies/:types/:movieId`)
     const tvIdMatch = useMatch(`/tvs/:types/:movieId`)
     const { scrollY } = useScroll()
@@ -154,13 +136,13 @@ export function Header() {
               <Col>
                 <Items>
                     <Item isActive={homeMatch !== null || movieIdMatch !== null }>
-                        <Link to={'/'}>영화{homeMatch || movieIdMatch ? <Circle layoutId="circle"/>: null}</Link>
+                        <Link to={'/'}>영화</Link>
                     </Item>
                     <Item isActive={tvMatch !== null || tvIdMatch !== null }>
-                      <Link to={'/tvs'}>TV{tvMatch || tvIdMatch ? <Circle layoutId="circle"/>: null}</Link>
+                      <Link to={'/tvs'}>TV</Link>
                     </Item>
                     <Item isActive={searchMach !== null || searchKeywordMach !== null }>
-                      <Link to={'/search/movies'}>검색{searchMach || searchKeywordMach ? <Circle layoutId="circle"/>: null}</Link>
+                      <Link to={'/search/movies'}>검색</Link>
                     </Item>
                 </Items>
             </Col>

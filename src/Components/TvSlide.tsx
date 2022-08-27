@@ -1,17 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, useScroll } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import { getTvShows, ITvShowsResult, } from "../api";
 import { TvTypes } from "../enums";
 import { makeImagePath, useWindowDimensions } from "../utiles";
-import { Before, BigCover, BigMovie, BigOverview, BigTitle, Box, BoxContainer, BoxVariants, HoverBox, HoverDetailBtn, InfoBox, InfoRate, InfoTextBox, InfoTitle, infovariants, Next, Overlay, Row, rowVariants, SliderContainer, SliderTitle, SliderWrapper } from "./Slider";
-
-const offset = 6;
+import { BigTv } from "./BigTv";
+import { Before, Box, BoxContainer, BoxVariants, HoverBox, HoverDetailBtn, InfoBox, InfoRate, InfoTextBox, InfoTitle, infovariants, Next, Row, rowVariants, SliderContainer, SliderTitle, SliderWrapper } from "./Slider";
 
 export function TvSlider({type}:{type:TvTypes}) {
+
+    const [offset,setOffset] = useState(6);
+    useEffect(()=>{
+      const resizeHandler = () => {
+        if(window.innerWidth > 688){
+          setOffset(4)
+        }
+        if(window.innerWidth > 992){
+          setOffset(5)
+        }
+        if(window.innerWidth > 1312){
+          setOffset(6)
+        }
+      }
+      resizeHandler();
+    },[window.innerWidth]);
     const { data } = useQuery<ITvShowsResult>(["TvShows", type], ()=>getTvShows(type))
+    const bigTvShowMatch = useMatch(`/tvs/${type}/:tvId`)
     const [index, setIndex] = useState(0)
     const [leaving, setLeaving] =useState(false)
     const toggleLeaving = ()=>setLeaving(prev=>!prev)
@@ -37,14 +52,8 @@ export function TvSlider({type}:{type:TvTypes}) {
           setIndex(prev => prev === 0 ? maxIndex : prev - 1)
         }
       }
-    const bigTvShowMatch = useMatch(`/tvs/${type}/:tvId`)
-    const clickedTvshow = bigTvShowMatch?.params.tvId && data?.results.find(movie => movie.id + "" === bigTvShowMatch?.params.tvId)
-    console.log(clickedTvshow)
     const onBoxClicked = (tvId:number) => {
       navigate(`/tvs/${type}/${tvId}`)
-    }
-    const onOverlayClicked = () => {
-      navigate(`/tvs`)
     }
     const width = useWindowDimensions();
     const {scrollY} = useScroll()
@@ -122,36 +131,7 @@ export function TvSlider({type}:{type:TvTypes}) {
         </SliderWrapper>
         <AnimatePresence >
         { bigTvShowMatch?
-                  <>
-                        <Overlay
-                            onClick={onOverlayClicked}
-                            exit={{opacity: 0}}
-                            animate={{opacity: 1}}>
-                        </Overlay>
-                        <BigMovie
-                            layoutId={type + bigTvShowMatch.params.tvId}
-                            style={{ top: scrollY.get() + 100 }}
-                        >
-                            {clickedTvshow && <>
-                                <BigCover
-                                style={{
-                                    backgroundImage: `linear-gradient(to top, black, transparent),
-                                        url(${makeImagePath(clickedTvshow.backdrop_path || clickedTvshow.poster_path,"w500")})
-                                        `
-                                    }}
-                                />
-                                <BigTitle>{clickedTvshow.name}</BigTitle>
-                                <BigOverview>
-                                  {clickedTvshow.overview ? (
-                                    <>
-                                      <h4>줄거리</h4>
-                                      {clickedTvshow.overview}
-                                    </>
-                                  ) : null}
-                                </BigOverview>
-                            </>}
-                        </BigMovie>
-                  </>
+            <BigTv type={type} data={data} scrollY={scrollY.get()}></BigTv>
                 : null }
         </AnimatePresence>
       </>

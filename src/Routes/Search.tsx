@@ -5,7 +5,6 @@ import { Link, useMatch } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import MovieSearch from "../Components/MovieSearch";
-import { BigBottom, BigCover, BigGenres, BigLang, BigMovie, BigOverview, BigTitle, Overlay } from "../Components/Slider";
 import TvShowSearch from "../Components/TvSearch";
 
 export const Container = styled.div`

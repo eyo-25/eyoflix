@@ -65,21 +65,6 @@ export interface ITvShow {
 }
 
 export interface IGetTvShowsDetail {
-  page: number;
-  results: ITvShow[];
-  total_pages: number;
-  total_results: number;
-}
-
-
-export interface IGetMoviesDetail {
-  page: number;
-  results: IMovie[];
-  total_pages: number;
-  total_results: number;
-}
-
-export interface IGetMovieDetail {
   adult: boolean;
   backdrop_path: string;
   budget: number;
@@ -98,6 +83,28 @@ export interface IGetMovieDetail {
   release_date: string;
   runtime: number;
   title: string;
+  tagline: string;
+}
+
+export interface IGetMovieDetail {
+  adult: boolean;
+  backdrop_path: string;
+  budget: number;
+  genres: [
+    {
+      id: number;
+      name: string;
+    }
+  ];
+  id: number;
+  original_language: string;
+  original_name: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  first_air_date: string;
+  name: string;
+  tagline: string;
 }
 
 export async function getMovies(type: Types) {
@@ -141,5 +148,4 @@ export async function getTvShowDetail(tvId: string | undefined) {
     )
   ).json();
 }
-
 

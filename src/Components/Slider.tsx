@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { getMovieDetail, getMovies, IGetMovieDetail, IGetMoviesResult } from "../api";
 import { Types } from "../enums";
 import { makeImagePath, useWindowDimensions } from "../utiles";
+import { BigMovie } from "./BigMovie";
 
 export const SliderTitle = styled.h4`
     text-transform: uppercase;
@@ -93,7 +94,7 @@ export const HoverBox = styled(motion.div)`
       padding: 20px 10px;
     }
     @media screen and (min-width: 62rem) {
-      padding: 50px 40;
+      padding: 55px 30px;
     }
     @media screen and (min-width: 82rem) {
       padding: 70px 40px;
@@ -174,7 +175,7 @@ export const BoxVariants = {
     scale: 1,
   },
   hover:{
-    zIndex: 10,
+    zIndex: 9,
     scale: 1.05,
     y: -20,
     transition: {
@@ -195,72 +196,6 @@ export const infovariants = {
     }
   }
 }
-
-export const Overlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  z-index: 11;
-`
-
-export const BigMovie = styled(motion.div)`
-  position: absolute;
-  width: 600px;
-  height: 70vh;
-  left: 0;
-  right: 0;
-  margin:0 auto;
-  background-color:${props => props.theme.black.darker};
-  border-radius: 10px;
-  overflow: hidden;
-  z-index: 12;
-`
-
-export const BigCover = styled.div`
-  width: 100%;
-  height: 300px;
-  background-size: cover;
-  background-position: center center;
-  position: relative;
-`
-
-export const BigTitle = styled.h3`
-  padding: 20px 25px;
-  position: absolute;
-  bottom: 0;
-  font-weight: 400;
-  color: ${(props) => props.theme.white.lighter};
-  font-size: 1.25rem;
-  @media screen and (min-width: 43rem) {
-    font-size: 1.3rem;
-  }
-  @media screen and (min-width: 62rem) {
-    font-size: 1.6rem;
-  }
-  @media screen and (min-width: 82rem) {
-    font-size: 2em;
-  }
-  p{
-    font-size: 16px;
-    margin-top: 8px;
-    font-weight: 300;
-  }
-`
-export const BigOverview = styled.p`
-  position: relative;
-  line-height: 1.6;
-  padding: 30px 25px;
-  color: ${(props) => props.theme.white.lighter};
-  font-size: 14px;
-  h4{
-    font-weight: 500;
-    margin-bottom: 8px;
-    font-size: 18px;
-  }
-`
 
 export const Before = styled(motion.div)`
     height: 470px;
@@ -309,47 +244,12 @@ export const Next = styled(motion.div)`
     }
 `
 
-export const BigBottom = styled.div`
-    position: absolute;
-    bottom: 0;
-    padding: 25px;
-    font-weight: 400;
-    font-size: 20px;
-    color: rgb(255, 72, 72);
-    span{
-        margin: 4px;
-        color: ${(props) => props.theme.white.lighter};
-        text-transform: uppercase;
-    }
-`
-
-export const BigLang = styled.p`
-    p{
-        color: ${(props) => props.theme.white.lighter};
-        text-transform: uppercase;
-    }
-`
-
-export const BigGenres = styled.p``
-
 export const InfoBox = styled.div`
   margin-top: 10px;
 `
 
 export const BoxContainer = styled(motion.div)`
     text-align: center;
-`
-
-export const InfoTitle = styled.span`
-    color: white;
-    font-size: 15px;
-    margin-top: 12px;
-    font-weight: bold;
-    /* 줄임말 설정  */
-    width: 50px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
 `
 
 export const InfoTextBox = styled.div`
@@ -363,6 +263,17 @@ export const InfoTextBox = styled.div`
     }
 `
 
+export const InfoTitle = styled.span`
+    color: white;
+    font-size: 15px;
+    margin-top: 12px;
+    font-weight: bold;
+    /* 줄임말 설정  */
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+`
+
 export const InfoRate = styled.div`
     display: flex;
     justify-content: center;
@@ -371,6 +282,7 @@ export const InfoRate = styled.div`
 `
 
 export function MovieSlider({type}:{type:Types}) {
+    const {scrollY} = useScroll()
     const [offset,setOffset] = useState(6);
     useEffect(()=>{
       const resizeHandler = () => {
@@ -393,7 +305,7 @@ export function MovieSlider({type}:{type:Types}) {
     const navigate = useNavigate()
     const [clickReverse, setClickReverse] = useState(false)
     const bigMovieMatch = useMatch(`/movies/${type}/:movieId`)
-    const {data:detailData, isLoading:detailLoding} = useQuery<IGetMovieDetail>([bigMovieMatch?.params.movieId, "detail"], ()=>getMovieDetail(bigMovieMatch?.params.movieId))
+
     const nextSlide = ()=>{
       if(data) {
         if(leaving) return;
@@ -414,21 +326,14 @@ export function MovieSlider({type}:{type:Types}) {
           setIndex(prev => prev === 0 ? maxIndex : prev - 1)
         }
       }
-    const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id + "" === bigMovieMatch?.params.movieId)
     // data에서 bigMovie로 클릭한 movieid와 동일한 정보를 다 불러온다
-    console.log(clickedMovie)
     const onBoxClicked = (movieId:number) => {
       navigate(`/movies/${type}/${movieId}`)
-    }
-    const onOverlayClicked = () => {
-      navigate(`/`)
     }
     const width = useWindowDimensions();
     // if(leaving) return; 슬라이더 버튼을 눌렀을때 setLeaving(true)가 되어 한번더 누르는걸 방지한다.
     // 또한 <AnimatePresence onExitComplete={()=>setLeaving(false)}>으로 애니메이션(슬라이드)이 끝났을때 초기화
     // <AnimatePresence initial={false} 사용시 페이지 로드시 애니메이션(initial)이 발생되지않는다
-    const {scrollY} = useScroll()
-    console.log(clickedMovie)
     return(
       <>
         <SliderWrapper>
@@ -501,47 +406,8 @@ export function MovieSlider({type}:{type:Types}) {
         </SliderWrapper>
         <AnimatePresence>
         { bigMovieMatch?
-                  <>
-                        <Overlay
-                            onClick={onOverlayClicked}
-                            exit={{opacity: 0}}
-                            animate={{opacity: 1}}>
-                        </Overlay>
-                        <BigMovie
-                            layoutId={type + bigMovieMatch.params.movieId}
-                            style={{ top: scrollY.get() + 100 }}
-                        >
-                            {clickedMovie && <>
-                                <BigCover
-                                style={{
-                                    backgroundImage: `linear-gradient(to top, black, transparent),
-                                        url(${makeImagePath(clickedMovie.backdrop_path || clickedMovie.poster_path,"w500")})
-                                        `
-                                    }}
-                                >
-                                  <BigTitle>
-                                    <span>{clickedMovie.title}</span>
-                                    <p>⭐️ {clickedMovie?.vote_average}</p>
-                                  </BigTitle>
-                                </BigCover>
-                                <BigOverview>
-                                  <h4>줄거리</h4>
-                                  {clickedMovie.overview}
-                                </BigOverview>
-                                <BigBottom>
-                                    Realese <span>
-                                    {new Date(clickedMovie?.release_date).getFullYear()}
-                                    </span>
-                                    <BigGenres>Genres {detailData?.genres.map((genres)=>
-                                            <span>{genres.name}</span>
-                                        )}
-                                    </BigGenres>
-                                    <BigLang>Language <span>{clickedMovie.original_language}</span></BigLang>
-                                </BigBottom>
-                            </>}
-                        </BigMovie>
-                  </>
-                : null }
+                <BigMovie type={type} data={data} scrollY={scrollY.get()}></BigMovie>
+        : null }
         </AnimatePresence>
       </>
     )

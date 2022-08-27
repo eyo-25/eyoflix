@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getSearchResult, IGetTvShowsDetail } from "../api";
+import { getSearchResult, ITvShowsResult } from "../api";
 import { makeImagePath } from "../utiles";
-import Loader from "./Loader";
-import { BoxVariants, Content, ContentImg, ContentInfo, ContentInfoBox, ContentRate, ContentTitle, Cover, CoverVariants, DetailBtn } from "./MovieSearch";
+import { BoxVariants, Content, ContentImg, ContentInfo, ContentInfoBox, ContentRate, ContentTitle, NoSearch} from "./MovieSearch";
 
 function TvShowSearch() {
-    let keyword = useParams();
-    const { data, isLoading } = useQuery<IGetTvShowsDetail>(["searchTvShow", 1],()=>getSearchResult({
+  let params = useParams();
+  let keyword = params.keyword
+    const { data } = useQuery<ITvShowsResult>(["searchTvShow", 1],()=>getSearchResult({
       category: "tv",
-      keyword: keyword.keyword + "",
+      keyword: keyword + "",
       page:1
     }),
     {refetchInterval: 1000}
@@ -17,10 +17,13 @@ function TvShowSearch() {
 
     const noData = data?.total_pages!! < 1;
 
-    console.log(keyword)
-
     return(
-      noData ? <Loader>Now Loading...</Loader> : (
+      noData ? ( 
+        <NoSearch>
+          <span>' {keyword} '</span> 에 대한 검색결과가 없습니다.
+          <p>영문이나 보다 일반적인 검색어를 입력해주세요</p>
+        </NoSearch>
+      ) : (
         <>
           {data?.results.map((tvshow)=>
               <Content
@@ -31,9 +34,6 @@ function TvShowSearch() {
                 key={tvshow.id + ""}
               >
                   <ContentImg bgphoto={ makeImagePath(tvshow.poster_path, "w500" || tvshow.backdrop_path)}>
-                      <Cover variants={CoverVariants} initial="normal" whileHover="hover">
-                        <DetailBtn>상세정보</DetailBtn>
-                      </Cover>
                   </ContentImg>
                   <ContentInfoBox>
                       <ContentTitle>{tvshow.name}</ContentTitle>

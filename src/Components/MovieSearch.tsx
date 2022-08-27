@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, useScroll } from "framer-motion"
-import { useNavigate, useParams } from "react-router-dom";
+import { motion } from "framer-motion"
+import { useParams } from "react-router-dom";
 import styled from "styled-components"
-import { getSearchResult, IGetMoviesDetail } from "../api";
+import { getSearchResult, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utiles";
-import Loader from "./Loader";
 
 export const Content = styled(motion.div)`
     width: 220px;
@@ -20,7 +19,6 @@ export const Cover = styled(motion.div)`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.7);
 `
 
 export const DetailBtn = styled(motion.button)`
@@ -127,38 +125,46 @@ export const BoxVariants = {
   }
 }
 
-export const CoverVariants = {
-  normal:{
-    opacity: 0
-  },
-  hover:{
-    opacity: 1
+export const NoSearch = styled.div`
+  margin-top: 50%;
+  letter-spacing: -1px;
+  line-height: 1.5;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  span{
+    color: rgb(227, 9, 20);
   }
-}
+  p{
+    margin-top: 10px;
+    color: rgb(141, 141, 141);
+    font-size: 14px;
+  }
+`
 
 function MovieSearch() {
     let params = useParams();
     let keyword = params.keyword
-    const navigate = useNavigate()
-    const { data:dataFirst, isLoading: isLoadingfirst } = useQuery<IGetMoviesDetail>(["searchMovie", 1],()=>getSearchResult({
+    const { data} = useQuery<IGetMoviesResult>(["searchMovie", 1],()=>getSearchResult({
       category: "movie",
       keyword: keyword + "",
       page:1
     }),
     {refetchInterval: 1000}
     )
-    const contentClick = (movieId:number)=>{
-      navigate(`/search/movies/${keyword}/${movieId}`)
-    }
 
-    const noData = dataFirst?.total_pages!! < 1;
+    const noData = data?.total_pages!! < 1;
 
     return(
-      noData ? <Loader>Now Loading...</Loader> : (
+      noData ? (
+        <NoSearch>
+          <span>' {keyword} '</span> 에 대한 검색결과가 없습니다.
+          <p>영문이나 보다 일반적인 검색어를 입력해주세요</p>
+        </NoSearch>
+      ) : (
         <>
-          {dataFirst?.results.map((movie)=>
+          {data?.results.map((movie)=>
               <Content
-                onClick={()=>contentClick(movie.id)}
                 variants={BoxVariants}
                 initial="normal"
                 whileHover="hover"
@@ -166,9 +172,6 @@ function MovieSearch() {
                 key={movie.id + ""}
               >
                   <ContentImg bgphoto={ makeImagePath(movie.poster_path, "w500" || movie.backdrop_path)}>
-                    <Cover variants={CoverVariants} initial="normal" whileHover="hover">
-                      <DetailBtn>상세정보</DetailBtn>
-                    </Cover>
                   </ContentImg>
                   <ContentInfoBox>
                       <ContentTitle>{movie.title}</ContentTitle>
