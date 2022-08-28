@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { motion } from "framer-motion"
+import { useState } from "react"
 import { useMatch, useNavigate } from "react-router-dom"
 import styled from "styled-components"
-import { getMovieDetail, IGetMovieDetail, IGetMoviesResult } from "../api"
+import { getCredits, getMovieDetail, ICredits, IGetMovieDetail, IGetMoviesResult } from "../api"
 import { Types } from "../enums"
 import { makeImagePath } from "../utiles"
 
@@ -18,15 +19,15 @@ export const Overlay = styled(motion.div)`
 
 export const BigBox = styled(motion.div)`
   position: absolute;
-  width: 600px;
-  height: 70vh;
+  width: 640px;
+  height: 75vh;
   left: 0;
   right: 0;
   margin:0 auto;
   background-color:${props => props.theme.black.darker};
   border-radius: 10px;
-  overflow: hidden;
   z-index: 12;
+  overflow-y: scroll;
 `
 
 export const BigCover = styled.div`
@@ -38,7 +39,7 @@ export const BigCover = styled.div`
 `
 
 export const BigTitle = styled.div`
-  padding: 25px 30px;
+  padding: 30px;
   position: absolute;
   bottom: 0;
   h5 {
@@ -88,6 +89,7 @@ export const TitleInfoBox = styled.div`
     border-radius: 4px;
     padding: 0 8px;
     margin-right: 5px;
+    cursor: pointer;
   }
 `
 
@@ -102,21 +104,70 @@ export const Gengre = styled.div`
   box-sizing: border-box;
   color: rgb(254, 211, 48);
   border: 1px solid rgb(254, 211, 48);
+  &:hover{
+    color: rgb(255, 255, 255);
+    background-color: rgb(254, 211, 48);
+    border: rgb(254, 211, 48);
+  }
+`
+
+export const BigInfo = styled.div`
+  padding: 30px;
 `
 
 export const BigOverview = styled.p`
   font-size: 20px;
   position: relative;
   line-height: 1.6;
-  padding: 30px;
+  margin-bottom: 30px;
   color: ${(props) => props.theme.white.lighter};
   h4{
     font-size: 18px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     font-weight: 500;
   }
   p {
     font-size: 14px;
+    color: rgb(229, 229, 229);
+  }
+`
+
+export const CastTitle = styled.h4`
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 500;
+`
+
+export const CastBox = styled.div`
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+`
+
+export const CastImgBox = styled.div`
+
+`
+
+export const CastImg = styled.div<{ bgphoto: string }>`
+  background: url(${props=>props.bgphoto});
+  background-size: cover;
+  background-position: center center;
+  height: 160px;
+  margin-bottom: 8px;
+`
+
+export const CastName = styled.div`
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  span{
+    margin-bottom: 3px;
+    font-weight: 400;
+  }
+  p{
+    font-size: 13px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.5);
   }
 `
 
@@ -124,11 +175,17 @@ export function BigMovie ({type, data, scrollY}:{type:Types, data:IGetMoviesResu
     const bigMovieMatch = useMatch(`/movies/${type}/:movieId`)
     const {data:detailData, isLoading:detailLoding} = useQuery<IGetMovieDetail>([bigMovieMatch?.params.movieId, "detail"], ()=>getMovieDetail(bigMovieMatch?.params.movieId))
     const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id + "" === bigMovieMatch?.params.movieId)
+    const {data:creditData, isLoading:creditLoding} = useQuery<ICredits>([bigMovieMatch?.params.movieId, "credit"], ()=>getCredits({
+      category:"movie",
+      id:bigMovieMatch?.params.movieId
+    }))
     const navigate = useNavigate()
     const onOverlayClicked = () => {
         navigate(-1)
       }
-      console.log(detailData)
+    const [index, setIndex] = useState(0)
+    const offset = 5;
+    console.log(creditData)
     return(
         <>
             { bigMovieMatch ?
@@ -153,26 +210,48 @@ export function BigMovie ({type, data, scrollY}:{type:Types, data:IGetMoviesResu
                                     `
                                 }}
                             >
-                            <BigTitle>
-                                <h5>{clickedMovie.title}</h5>
-                                <p>{detailData?.tagline}</p>
-                                <TitleInfo>
-                                  <span> {clickedMovie.original_language}</span>
-                                  <p>{clickedMovie?.release_date}</p>
-                                </TitleInfo>
-                                <TitleInfoBox>
-                                  <Rank>★ {clickedMovie?.vote_average}</Rank>
-                                  {detailData?.genres.map((genres)=><Gengre>#{genres.name}</Gengre>)}
-                                </TitleInfoBox>
-                            </BigTitle>
+                              <BigTitle>
+                                  <h5>{clickedMovie.title}</h5>
+                                  {detailData?.tagline !== ""? (
+                                    <p>{detailData?.tagline}</p>
+                                  ) :null}
+                                  <TitleInfo>
+                                    <span> {clickedMovie.original_language}</span>
+                                    <p>{clickedMovie?.release_date}</p>
+                                  </TitleInfo>
+                                  <TitleInfoBox>
+                                    <Rank>★ {clickedMovie?.vote_average}</Rank>
+                                    {detailData?.genres.map((genres)=><Gengre>#{genres.name}</Gengre>)}
+                                  </TitleInfoBox>
+                              </BigTitle>
                             </BigCover>
-                            {clickedMovie.overview !== "" ? 
-                                <BigOverview>
-                                  <h4>줄거리</h4>
-                                  <p>{clickedMovie.overview}</p>
-                                </BigOverview>
-                              : null
-                            }
+                            <BigInfo>
+                                  {clickedMovie.overview !== "" ? 
+                                      <BigOverview>
+                                        <h4>줄거리</h4>
+                                        <p>{clickedMovie.overview}</p>
+                                      </BigOverview>
+                                    : null
+                                  }
+                                  {creditData ? (
+                                    <>
+                                      <CastTitle>
+                                        주요 출연진
+                                      </CastTitle>
+                                      <CastBox>
+                                        {creditData?.cast.slice(offset*index, offset*index+offset).map((cast)=>
+                                          <CastImgBox key={cast.id}>
+                                              <CastImg bgphoto={makeImagePath(cast.profile_path + "", "w200" || cast.profile_path + "w500")}/>
+                                              <CastName>
+                                                <span>{cast.name}</span>
+                                                <p>{cast.character}</p>
+                                              </CastName>
+                                          </CastImgBox>
+                                        )}
+                                      </CastBox>
+                                    </>
+                                  ) :null}
+                            </BigInfo>
                         </>}
                     </BigBox>
                 </>

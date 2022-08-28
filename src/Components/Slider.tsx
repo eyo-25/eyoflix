@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovieDetail, getMovies, IGetMovieDetail, IGetMoviesResult } from "../api";
+import { getMovies, IGetMoviesResult } from "../api";
 import { Types } from "../enums";
 import { makeImagePath, useWindowDimensions } from "../utiles";
 import { BigMovie } from "./BigMovie";
@@ -159,7 +159,7 @@ export const HoverDetailBtn = styled(motion.button)`
 
 export const rowVariants = {
   hidden: ({width, clickReverse}:{width:number, clickReverse:boolean})=>({
-      x: clickReverse ? -width - 5 : width + 5,
+    x: clickReverse ? -width - 5 : width + 5,
   }),
   visible: {
     x: 0,
@@ -329,6 +329,7 @@ export function MovieSlider({type}:{type:Types}) {
     // data에서 bigMovie로 클릭한 movieid와 동일한 정보를 다 불러온다
     const onBoxClicked = (movieId:number) => {
       navigate(`/movies/${type}/${movieId}`)
+      document.body.classList.add("stop-scroll")
     }
     const width = useWindowDimensions();
     // if(leaving) return; 슬라이더 버튼을 눌렀을때 setLeaving(true)가 되어 한번더 누르는걸 방지한다.
@@ -404,7 +405,11 @@ export function MovieSlider({type}:{type:Types}) {
                 </Next>
             </SliderContainer>
         </SliderWrapper>
-        <AnimatePresence>
+        <AnimatePresence
+          onExitComplete={() =>
+            document.body.classList.remove("stop-scroll")
+          }
+        >
         { bigMovieMatch?
                 <BigMovie type={type} data={data} scrollY={scrollY.get()}></BigMovie>
         : null }

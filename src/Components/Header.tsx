@@ -2,8 +2,7 @@ import styled from "styled-components"
 import { motion, useAnimation, useScroll } from "framer-motion";
 import { useMatch, useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -39,7 +38,7 @@ const Items = styled.ul`
 `;
 
 const Item = styled.li<{isActive:boolean}>`
-  padding: 15px 30px;
+  padding: 18px 30px;
   color: ${(props) => props.isActive ? "rgb(227, 9, 20)" :props.theme.white.lighter};
   transition: color 0.3s ease-in-out;
   position: relative;
@@ -68,14 +67,14 @@ const navVariants = {
 const logoVariants = {
   normal:{
     fill:"rgba(227, 9, 20,1)",
-    pathLength:0
+    pathLength:0.3
   },
   end:{
     fill:["rgba(255,255,255,0)","rgba(227, 9, 20,1)"],
-    pathLength:[0,1],
+    pathLength:[0,1,0],
     transition:{
-      duration: 3,
-      type:"linear"
+      duration: 3.5,
+      type:"ease-out"
     }
   },
   active:{

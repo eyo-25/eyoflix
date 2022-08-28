@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { motion, useScroll } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovies, IGetMoviesResult } from "../api";
+import { getMovieDetail, getMovies, IGetMovieDetail, IGetMoviesResult } from "../api";
 import { BigMovie } from "../Components/BigMovie";
 import Loader from "../Components/Loader";
 import { MovieSlider } from "../Components/Slider";
@@ -30,9 +30,9 @@ export const Banner = styled.div<{ bgphoto: string }>`
 
 export const Title = styled.h2`
   font-size: 60px;
-  margin-bottom: 20px;
-  font-weight: 400;
-  letter-spacing: -2px;
+  margin-bottom: 15px;
+  font-weight: 600;
+  letter-spacing: -2.5px;
 `;
 
 export const Overview = styled.p`
@@ -53,7 +53,40 @@ export const HomeDetailBtn = styled(motion.button)`
   transition: 0.2 ease;
 `
 
+export const TagBox = styled.div`
+    display: flex;
+    margin-bottom: 15px;
+    cursor: pointer;
+    div {
+      font-weight: 400;
+      padding: 5px;
+      border-radius: 5px;
+    }
+`
+
+export const HomeRank = styled.div`
+  background-color: rgba(255, 255, 255, 0.3);
+`
+
+export const HomeGengre = styled.div`
+  color: rgb(254, 211, 48);
+  border: 1px solid rgb(254, 211, 48);
+  margin-left: 6px;
+  &:hover{
+    color: rgb(255, 255, 255);
+    background-color: rgb(254, 211, 48);
+    border: rgb(254, 211, 48);
+  }
+`
+
 export const BtnVariants = {
+  normal: {
+    scale:1,
+    transition: {
+      style:"tween",
+      duration: 10,
+    }
+  },
   hover: {
     scale:[1,1.05,1],
     transition: {
@@ -66,8 +99,12 @@ export const BtnVariants = {
 
 export function Home() {
     const { isLoading, data } = useQuery<IGetMoviesResult>(["movies", "nowPlaying"], ()=>getMovies(Types.now_playing))
+    const {data:detailData, isLoading:detailLoding} = useQuery<IGetMovieDetail>([data?.results[0].id, "detail"], ()=>getMovieDetail(data?.results[0].id + ""))
     const navigate = useNavigate();
-    const btnClick = (movieId:number|undefined)=> navigate(`/movies/${Types.now_playing}/${movieId}`)
+    const btnClick = (movieId:number|undefined)=> {
+      navigate(`/movies/${Types.now_playing}/${movieId}`)
+      document.body.classList.add("stop-scroll")
+    }
     const bigMovieMatch = useMatch(`/movies/${Types.now_playing}/:movieId`)
     const {scrollY} = useScroll()
     return(
@@ -78,9 +115,14 @@ export function Home() {
           ) : (
               <>
                 <Banner bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}>
+                    <TagBox>
+                      <HomeRank>★{data?.results[0].vote_average}</HomeRank>
+                      {detailData?.genres.map((genres)=><HomeGengre>#{genres.name}</HomeGengre>)}
+                    </TagBox>
                     <Title>{data?.results[0].title}</Title>
                     <Overview>{data?.results[0].overview}</Overview>
                     <HomeDetailBtn
+                      initial="normal"
                       layoutId={Types.now_playing + data?.results[0].id}
                       onClick={()=>btnClick(data?.results[0].id)} variants={BtnVariants}
                       whileHover="hover"
@@ -95,10 +137,15 @@ export function Home() {
               </>
           )}
         </Wrapper>
-        
-        { bigMovieMatch?
-                <BigMovie type={Types.now_playing} data={data} scrollY={scrollY.get()}></BigMovie>
-        : null }
+        <AnimatePresence
+          onExitComplete={() =>
+            document.body.classList.remove("stop-scroll")
+          }
+        >
+          { bigMovieMatch?
+              <BigMovie type={Types.now_playing} data={data} scrollY={scrollY.get()}></BigMovie>
+          : null }
+        </AnimatePresence>
       </>
     )
 }

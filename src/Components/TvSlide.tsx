@@ -54,6 +54,7 @@ export function TvSlider({type}:{type:TvTypes}) {
       }
     const onBoxClicked = (tvId:number) => {
       navigate(`/tvs/${type}/${tvId}`)
+      document.body.classList.add("stop-scroll")
     }
     const width = useWindowDimensions();
     const {scrollY} = useScroll()
@@ -129,7 +130,9 @@ export function TvSlider({type}:{type:TvTypes}) {
                 </Next>
             </SliderContainer>
         </SliderWrapper>
-        <AnimatePresence >
+        <AnimatePresence
+          onExitComplete={()=>document.body.classList.remove("stop-scroll")}
+        >
         { bigTvShowMatch?
             <BigTv type={type} data={data} scrollY={scrollY.get()}></BigTv>
                 : null }

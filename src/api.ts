@@ -107,6 +107,29 @@ export interface IGetMovieDetail {
   tagline: string;
 }
 
+export interface ICredits {
+  id: number;
+  cast: Cast[];
+  crew: Cast[];
+}
+
+export interface Cast {
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: null | string;
+  cast_id?: number;
+  character?: string;
+  credit_id: string;
+  order?: number;
+  department?: string;
+  job?: string;
+}
+
 export async function getMovies(type: Types) {
     return (
       await fetch(
@@ -145,6 +168,17 @@ export async function getTvShowDetail(tvId: string | undefined) {
   return (
     await fetch(
       `${BASE_PATH}/tv/${tvId}?api_key=${API_KEY}&language=ko`
+    )
+  ).json();
+}
+
+export async function getCredits({category, id}: {
+  category:string | undefined ,
+  id:string | undefined
+}) {
+  return (
+    await fetch(
+      `${BASE_PATH}/${category}/${id}/credits?api_key=${API_KEY}&language=ko`
     )
   ).json();
 }
