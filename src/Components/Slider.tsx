@@ -5,7 +5,7 @@ import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import { Types } from "../enums";
-import { makeImagePath, useWindowDimensions } from "../utiles";
+import { makeImagePath } from "../utiles";
 import { BigMovie } from "./BigMovie";
 
 export const SliderTitle = styled.h4`
@@ -29,10 +29,10 @@ export const SliderContainer = styled.div`
       display:none;
     }
     @media screen and (min-width: 43rem) {
-      height: 400px;
+      height: 450px;
     }
     @media screen and (min-width: 62rem) {
-      height: 500px;
+      height: 550px;
     }
     @media screen and (min-width: 82rem) {
       height: 600px;
@@ -45,10 +45,10 @@ export const Row = styled(motion.div)`
     gap: 10px;
     width: 100%;
     position: absolute;
-    @media screen and (min-width: 43rem) {
+    @media screen and (min-width: 40rem) {
       grid-template-columns: repeat(4,1fr);
     }
-    @media screen and (min-width: 62rem) {
+    @media screen and (min-width: 60rem) {
       grid-template-columns: repeat(5,1fr);
     }
     @media screen and (min-width: 82rem) {
@@ -73,10 +73,10 @@ export const Box = styled(motion.div)<{ bgphoto: string }>`
         transform-origin: center right;
     }
     @media screen and (min-width: 43rem) {
-      height: 200px;
+      height: 300px;
     }
     @media screen and (min-width: 62rem) {
-      height: 300px;
+      height: 400px;
     }
     @media screen and (min-width: 82rem) {
       height: 470px;
@@ -85,8 +85,8 @@ export const Box = styled(motion.div)<{ bgphoto: string }>`
 
 export const HoverBox = styled(motion.div)`
     padding: 70px 40px;
-    background-color: rgba(0, 0, 0, 0.8);
     opacity: 0;
+    background-color: rgba(0, 0, 0, 0.8);
     position: relative;
     width: 100%;
     height: 100%;
@@ -99,29 +99,30 @@ export const HoverBox = styled(motion.div)`
     @media screen and (min-width: 82rem) {
       padding: 70px 40px;
     }
-    h4 {
-        line-height: 1.8;
-        letter-spacing: -1px;
-        color: white;
-        text-align: center;
-        font-size: 15px;
-        font-weight: 500;
-        
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
+`
+
+export const HoverOverView = styled.span`
+      line-height: 1.8;
+      letter-spacing: -1px;
+      color: white;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 7;
+      -webkit-box-orient: vertical;
+      @media screen and (min-width: 43rem) {
+        -webkit-line-clamp: 3;
+      }
+      @media screen and (min-width: 62rem) {
+        -webkit-line-clamp: 5;
+      }
+      @media screen and (min-width: 82rem) {
         -webkit-line-clamp: 7;
-        -webkit-box-orient: vertical;
-        @media screen and (min-width: 43rem) {
-          -webkit-line-clamp: 3;
-        }
-        @media screen and (min-width: 62rem) {
-          -webkit-line-clamp: 5;
-        }
-        @media screen and (min-width: 82rem) {
-          -webkit-line-clamp: 7;
-        }
-    }
+      }
 `
 
 export const HoverDetailBtn = styled(motion.button)`
@@ -156,46 +157,6 @@ export const HoverDetailBtn = styled(motion.button)`
           width: 50%;
         }
 `
-
-export const rowVariants = {
-  hidden: ({width, clickReverse}:{width:number, clickReverse:boolean})=>({
-    x: clickReverse ? -width - 5 : width + 5,
-  }),
-  visible: {
-    x: 0,
-  },
-  exit: ({width, clickReverse}:{width:number, clickReverse:boolean})=>({
-    x: clickReverse ? width + 5 : -width - 5,
-}),
-};
-// user의 화면크기 = window.outerWidth 마지막에 +10 -10은 row끼리의 간격을 잡기위해서이다
-
-export const BoxVariants = {
-  normal:{
-    scale: 1,
-  },
-  hover:{
-    zIndex: 9,
-    scale: 1.05,
-    y: -20,
-    transition: {
-      duration: 0.3
-    }
-  }
-}
-
-// hover에만 transition을 주어야 hover동작시에만 delay가 들어가고 다른 동작에 delay가 걸리지않는다
-
-export const infovariants = {
-  hover:{
-    opacity: 1,
-    trasition: {
-      delay: 0.5,
-      duration: 0.3,
-      type: "tween",
-    }
-  }
-}
 
 export const Before = styled(motion.div)`
     height: 470px;
@@ -281,6 +242,45 @@ export const InfoRate = styled.div`
     margin-top: 5px;
 `
 
+export const rowVariants = {
+  hidden : ({clickReverse}:{width:number, clickReverse:boolean})=>{
+    return ({
+      x: clickReverse ? -window.innerWidth - 5 + 120 : window.innerWidth + 5 -120,
+    })
+  },
+  visible: {
+    x: 0,
+  },
+  exit : ({clickReverse}:{width:number, clickReverse:boolean})=>{
+    return ({
+      x: clickReverse ? window.innerWidth + 5 -120 : -window.innerWidth - 5 + 120,
+    })
+  }
+};
+// user의 화면크기 = window.outerWidth 마지막에 120은 패딩간격
+
+export const BoxVariants = {
+  normal:{
+    scale: 1,
+  },
+  hover:{
+    zIndex: 9,
+    scale: 1.05,
+    y: -20,
+    transition: {
+      duration: 0.3
+    }
+  }
+}
+
+// hover에만 transition을 주어야 hover동작시에만 delay가 들어가고 다른 동작에 delay가 걸리지않는다
+
+export const HoverVariants = {
+  hover:{
+    opacity:1
+  }
+}
+
 export function MovieSlider({type}:{type:Types}) {
     const {scrollY} = useScroll()
     const [offset,setOffset] = useState(6);
@@ -297,7 +297,11 @@ export function MovieSlider({type}:{type:Types}) {
         }
       }
       resizeHandler();
-    },[window.innerWidth]);
+      window.addEventListener("optimizedResize", resizeHandler);
+      return ()=>{
+        window.removeEventListener("optimizedResize", resizeHandler);
+      }
+    },[]);
     const { data } = useQuery<IGetMoviesResult>(["movies", type], ()=>getMovies(type))
     const [index, setIndex] = useState(0)
     const [leaving, setLeaving] =useState(false)
@@ -316,6 +320,7 @@ export function MovieSlider({type}:{type:Types}) {
         setIndex(prev => prev === maxIndex ? 0 : prev + 1)
       }
     }
+
     const prevSlide = ()=>{
         if(data) {
           if(leaving) return;
@@ -326,15 +331,12 @@ export function MovieSlider({type}:{type:Types}) {
           setIndex(prev => prev === 0 ? maxIndex : prev - 1)
         }
       }
-    // data에서 bigMovie로 클릭한 movieid와 동일한 정보를 다 불러온다
+
     const onBoxClicked = (movieId:number) => {
       navigate(`/movies/${type}/${movieId}`)
       document.body.classList.add("stop-scroll")
     }
-    const width = useWindowDimensions();
-    // if(leaving) return; 슬라이더 버튼을 눌렀을때 setLeaving(true)가 되어 한번더 누르는걸 방지한다.
-    // 또한 <AnimatePresence onExitComplete={()=>setLeaving(false)}>으로 애니메이션(슬라이드)이 끝났을때 초기화
-    // <AnimatePresence initial={false} 사용시 페이지 로드시 애니메이션(initial)이 발생되지않는다
+
     return(
       <>
         <SliderWrapper>
@@ -345,15 +347,15 @@ export function MovieSlider({type}:{type:Types}) {
                   {type === "top_rated" && "평점높은 영화"}
                   {type === "upcoming" && "상영 예정"}
                 </SliderTitle>
-                <AnimatePresence custom={{width, clickReverse}} initial={false} onExitComplete={toggleLeaving}>
+                <AnimatePresence custom={{clickReverse}} initial={false} onExitComplete={toggleLeaving}>
                     <Row
-                    custom={{width, clickReverse}} 
-                    transition={{type:"tween", duration: 1}}
-                    variants={rowVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    key={index}
+                      custom={{clickReverse}} 
+                      transition={{type:"tween", duration: 1}}
+                      variants={rowVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      key={index}
                     >
                     {data?.results.slice(1).slice(offset*index, offset*index+offset).map((movie, i) =>
                         <BoxContainer
@@ -361,14 +363,19 @@ export function MovieSlider({type}:{type:Types}) {
                           initial="normal"
                           whileHover="hover"
                           transition={{type:"tween"}}
+                          key={type + movie.id + ""}
                         >
                           <Box
                             layoutId={type + movie.id}
                             onClick={()=> onBoxClicked(movie.id)}
                             bgphoto={makeImagePath(movie.poster_path || movie.backdrop_path, "w500")}
-                            key={type + movie.id}>
-                                <HoverBox variants={infovariants}>
-                                  <h4>{movie.overview}</h4>
+                            key={type + movie.id}
+                            >
+                                <HoverBox
+                                  variants={HoverVariants}
+                                  whileHover="hover"
+                                >
+                                  <HoverOverView>{movie.overview}</HoverOverView>
                                   <HoverDetailBtn>상세정보</HoverDetailBtn>
                                 </HoverBox>
                           </Box>
@@ -417,5 +424,3 @@ export function MovieSlider({type}:{type:Types}) {
       </>
     )
 }
-
-// <Banner bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}> 에서 data? || "" data가 들어오지 않으면 빈 string을 반환하도록한다.

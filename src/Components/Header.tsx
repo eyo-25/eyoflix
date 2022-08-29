@@ -111,7 +111,6 @@ export function Header() {
     const logoClicked = ()=>{navigate(`/`)}
 
     let keyword = useParams();
-    console.log(keyword)
     
     return (
         <Nav variants={navVariants} animate={navAnimation}>

@@ -115,7 +115,7 @@ export const BigInfo = styled.div`
   padding: 30px;
 `
 
-export const BigOverview = styled.p`
+export const BigOverview = styled.div`
   font-size: 20px;
   position: relative;
   line-height: 1.6;
@@ -132,7 +132,7 @@ export const BigOverview = styled.p`
   }
 `
 
-export const CastTitle = styled.h4`
+export const CastTitle = styled.div`
     font-size: 18px;
     margin-bottom: 15px;
     font-weight: 500;
@@ -173,19 +173,17 @@ export const CastName = styled.div`
 
 export function BigMovie ({type, data, scrollY}:{type:Types, data:IGetMoviesResult|undefined, scrollY:number}){
     const bigMovieMatch = useMatch(`/movies/${type}/:movieId`)
-    const {data:detailData, isLoading:detailLoding} = useQuery<IGetMovieDetail>([bigMovieMatch?.params.movieId, "detail"], ()=>getMovieDetail(bigMovieMatch?.params.movieId))
+    const {data:detailData, isLoading:detailLoding} = useQuery<IGetMovieDetail>([bigMovieMatch?.params.movieId, "detail"],
+    ()=>getMovieDetail(bigMovieMatch?.params.movieId),{ enabled: !!bigMovieMatch?.params.movieId })
     const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id + "" === bigMovieMatch?.params.movieId)
-    const {data:creditData, isLoading:creditLoding} = useQuery<ICredits>([bigMovieMatch?.params.movieId, "credit"], ()=>getCredits({
-      category:"movie",
-      id:bigMovieMatch?.params.movieId
-    }))
+    const {data:creditData, isLoading:creditLoding} = useQuery<ICredits>([bigMovieMatch?.params.movieId, "credit"],
+    ()=>getCredits({category:"movie",id:bigMovieMatch?.params.movieId}),{ enabled: !!bigMovieMatch?.params.movieId })
     const navigate = useNavigate()
     const onOverlayClicked = () => {
         navigate(-1)
       }
     const [index, setIndex] = useState(0)
     const offset = 5;
-    console.log(creditData)
     return(
         <>
             { bigMovieMatch ?
@@ -221,7 +219,7 @@ export function BigMovie ({type, data, scrollY}:{type:Types, data:IGetMoviesResu
                                   </TitleInfo>
                                   <TitleInfoBox>
                                     <Rank>★ {clickedMovie?.vote_average}</Rank>
-                                    {detailData?.genres.map((genres)=><Gengre>#{genres.name}</Gengre>)}
+                                    {detailData?.genres.map((genres)=><Gengre key={genres.id}>#{genres.name}</Gengre>)}
                                   </TitleInfoBox>
                               </BigTitle>
                             </BigCover>

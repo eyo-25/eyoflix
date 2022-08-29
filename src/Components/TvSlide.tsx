@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { getTvShows, ITvShowsResult, } from "../api";
 import { TvTypes } from "../enums";
-import { makeImagePath, useWindowDimensions } from "../utiles";
+import { makeImagePath } from "../utiles";
 import { BigTv } from "./BigTv";
-import { Before, Box, BoxContainer, BoxVariants, HoverBox, HoverDetailBtn, InfoBox, InfoRate, InfoTextBox, InfoTitle, infovariants, Next, Row, rowVariants, SliderContainer, SliderTitle, SliderWrapper } from "./Slider";
+import { Before, Box, BoxContainer, BoxVariants, HoverBox, HoverDetailBtn, HoverOverView, HoverVariants, InfoBox, InfoRate, InfoTextBox, InfoTitle, Next, Row, rowVariants, SliderContainer, SliderTitle, SliderWrapper } from "./Slider";
 
 export function TvSlider({type}:{type:TvTypes}) {
 
@@ -56,7 +56,6 @@ export function TvSlider({type}:{type:TvTypes}) {
       navigate(`/tvs/${type}/${tvId}`)
       document.body.classList.add("stop-scroll")
     }
-    const width = useWindowDimensions();
     const {scrollY} = useScroll()
 
     return(
@@ -69,9 +68,9 @@ export function TvSlider({type}:{type:TvTypes}) {
                   {type === "popular" && "인기 프로그램"}
                   {type === "top_rated" && "평점높은 프로그램"}
                 </SliderTitle>
-                <AnimatePresence custom={{width, clickReverse}} initial={false} onExitComplete={toggleLeaving}>
+                <AnimatePresence custom={{clickReverse}} initial={false} onExitComplete={toggleLeaving}>
                     <Row
-                    custom={{width, clickReverse}} 
+                    custom={{clickReverse}} 
                     transition={{type:"tween", duration: 1}}
                     variants={rowVariants}
                     initial="hidden"
@@ -81,6 +80,7 @@ export function TvSlider({type}:{type:TvTypes}) {
                     >
                     {data?.results.slice(1).slice(offset*index, offset*index+offset).map((tv, i) =>
                         <BoxContainer
+                          key={type + tv.id + ""}
                           variants={BoxVariants}
                           initial="normal"
                           whileHover="hover"
@@ -92,8 +92,11 @@ export function TvSlider({type}:{type:TvTypes}) {
                           transition={{type:"tween"}}
                           bgphoto={makeImagePath(tv.poster_path || tv.backdrop_path, "w500")}
                           key={type + tv.id}>
-                                <HoverBox variants={infovariants}>
-                                  <h4>{tv.overview}</h4>
+                                <HoverBox
+                                  variants={HoverVariants}
+                                  whileHover="hover"
+                                >
+                                  <HoverOverView>{tv.overview}</HoverOverView>
                                   <HoverDetailBtn>상세정보</HoverDetailBtn>
                                 </HoverBox>
                           </Box>

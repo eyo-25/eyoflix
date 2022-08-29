@@ -1,13 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, useScroll } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
-import { getTvShowDetail, getTvShows, IGetTvShowsDetail, ITvShowsResult } from "../api";
+import { getTvShows, ITvShowsResult } from "../api";
 import { BigTv } from "../Components/BigTv";
 import Loader from "../Components/Loader";
 import { TvSlider } from "../Components/TvSlide";
 import { TvTypes} from "../enums";
 import { makeImagePath } from "../utiles";
-import { Banner, BtnVariants, HomeDetailBtn, HomeGengre, HomeRank, Overview, TagBox, Title, Wrapper } from "./Home";
+import { Banner, BtnVariants, genreType, HomeDetailBtn, HomeGengre, HomeRank, Overview, TagBox, Title, Wrapper } from "./Home";
+
+const genres: genreType = {
+  10759: "액션 & 어드벤처",
+  16: "애니메이션",
+  35: "코미디",
+  80: "범죄",
+  99: "다큐멘터리",
+  18: "드라마",
+  10751: "가족",
+  10762: "키즈",
+  9648: "미스터리",
+  10763: "뉴스",
+  10764: "리얼리티",
+  10765: "공상과학 & 판타지",
+  10766: "연속극",
+  10767: "토크",
+  10768: "전쟁 & 정치",
+  37: "서부",
+};
 
 export function Tv() {
   const { isLoading, data } = useQuery<ITvShowsResult>(["tvshow", "airingtoday"], ()=>getTvShows(TvTypes.on_the_air))
@@ -18,7 +37,6 @@ export function Tv() {
   }
   const bigTvMatch = useMatch(`/tvs/${TvTypes.airing_today}/:tvId`)
   const {scrollY} = useScroll()
-  const {data:detailData, isLoading:detailLoding} = useQuery<IGetTvShowsDetail>([data?.results[0].id, "detail"], ()=>getTvShowDetail(data?.results[0].id+""))
     return(
       <>
         <Wrapper>
@@ -29,7 +47,7 @@ export function Tv() {
                 <Banner bgphoto={makeImagePath(data?.results[0].backdrop_path || "")}>
                     <TagBox>
                       <HomeRank>★{data?.results[0].vote_average}</HomeRank>
-                      {detailData?.genres.map((genres)=><HomeGengre>#{genres.name}</HomeGengre>)}
+                      {data?.results[0].genre_ids.map((g)=><HomeGengre key={g}>#{genres[g]}</HomeGengre>)}
                     </TagBox>
                     <Title>{data?.results[0].name}</Title>
                     <Overview>{data?.results[0].overview}</Overview>

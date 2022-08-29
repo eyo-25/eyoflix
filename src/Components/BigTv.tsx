@@ -13,12 +13,10 @@ export function BigTv ({type, data, scrollY}:{type:TvTypes, data:ITvShowsResult|
         navigate(`/tvs`)
       }
     const clickedTvshow = bigTvShowMatch?.params.tvId && data?.results.find(movie => movie.id + "" === bigTvShowMatch?.params.tvId)
-    const {data:detailData, isLoading:detailLoding} = useQuery<IGetTvShowsDetail>([bigTvShowMatch?.params.tvId, "detail"], ()=>getTvShowDetail(bigTvShowMatch?.params.tvId))
-    console.log(detailData)
-    const {data:creditData, isLoading:creditLoding} = useQuery<ICredits>([bigTvShowMatch?.params.tvId, "credit"], ()=>getCredits({
-      category:"tv",
-      id:bigTvShowMatch?.params.tvId
-    }))
+    const {data:detailData, isLoading:detailLoding} = useQuery<IGetTvShowsDetail>([bigTvShowMatch?.params.tvId, "detail"],
+    ()=>getTvShowDetail(bigTvShowMatch?.params.tvId), { enabled: !!bigTvShowMatch?.params.tvId})
+    const {data:creditData, isLoading:creditLoding} = useQuery<ICredits>([bigTvShowMatch?.params.tvId, "credit"],
+    ()=>getCredits({category:"tv", id:bigTvShowMatch?.params.tvId}),{ enabled: !!bigTvShowMatch?.params.tvId})
     const [index, setIndex] = useState(0)
     const offset = 5;
     return(
@@ -41,7 +39,7 @@ export function BigTv ({type, data, scrollY}:{type:TvTypes, data:ITvShowsResult|
                                     `
                                     linear-gradient(to top, rgba(0, 0, 0, 1) , rgba(0, 0, 0, 0)),
                                     linear-gradient(to right, rgba(0, 0, 0, 0.9), 50% , rgba(0, 0, 0, 0)),
-                                    url(${makeImagePath(clickedTvshow.backdrop_path || clickedTvshow.poster_path,"w500")})
+                                    url(${makeImagePath(clickedTvshow.backdrop_path || clickedTvshow.poster_path)})
                                     `
                                 }}
                             >
@@ -56,7 +54,7 @@ export function BigTv ({type, data, scrollY}:{type:TvTypes, data:ITvShowsResult|
                                 </TitleInfo>
                                 <TitleInfoBox>
                                   <Rank>★ {clickedTvshow?.vote_average}</Rank>
-                                  {detailData?.genres.map((genres)=><Gengre>#{genres.name}</Gengre>)}
+                                  {detailData?.genres.map((genres)=><Gengre key={genres.id}>#{genres.name}</Gengre>)}
                                 </TitleInfoBox>
                             </BigTitle>
                             </BigCover>
