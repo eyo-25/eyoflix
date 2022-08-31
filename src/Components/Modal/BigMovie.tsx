@@ -3,9 +3,9 @@ import { motion } from "framer-motion"
 import { useState } from "react"
 import { useMatch, useNavigate } from "react-router-dom"
 import styled from "styled-components"
-import { getCredits, getMovieDetail, ICredits, IGetMovieDetail, IGetMoviesResult } from "../api"
-import { Types } from "../enums"
-import { makeImagePath } from "../utiles"
+import { getCredits, getMovieDetail, ICredits, IGetMovieDetail, IGetMoviesResult } from "../../Api/api"
+import { Types } from "../../enums"
+import { makeImagePath } from "../../Api/utiles"
 
 export const Overlay = styled(motion.div)`
   position: fixed;
@@ -48,13 +48,13 @@ export const BigTitle = styled.div`
     color: ${(props) => props.theme.white.lighter};
     letter-spacing: -.5px;
     font-size: 1.25rem;
-    @media screen and (min-width: 43rem) {
+    @media (min-width: 688px){
       font-size: 1.3rem;
     }
-    @media screen and (min-width: 62rem) {
+    @media (min-width: 992px){
       font-size: 1.6rem;
     }
-    @media screen and (min-width: 82rem) {
+    @media (min-width: 1312px){
       font-size: 2em;
     }
   }
@@ -171,13 +171,13 @@ export const CastName = styled.div`
   }
 `
 
-export function BigMovie ({type, data, scrollY}:{type:Types, data:IGetMoviesResult|undefined, scrollY:number}){
+export function BigMovie ({type, scrollY}:{type:Types, data:IGetMoviesResult|undefined, scrollY:number}){
     const bigMovieMatch = useMatch(`/movies/${type}/:movieId`)
     const {data:detailData, isLoading:detailLoding} = useQuery<IGetMovieDetail>([bigMovieMatch?.params.movieId, "detail"],
     ()=>getMovieDetail(bigMovieMatch?.params.movieId),{ enabled: !!bigMovieMatch?.params.movieId })
-    const clickedMovie = bigMovieMatch?.params.movieId && data?.results.find(movie => movie.id + "" === bigMovieMatch?.params.movieId)
     const {data:creditData, isLoading:creditLoding} = useQuery<ICredits>([bigMovieMatch?.params.movieId, "credit"],
     ()=>getCredits({category:"movie",id:bigMovieMatch?.params.movieId}),{ enabled: !!bigMovieMatch?.params.movieId })
+    //enabled: !!옵션값 옵션값이 ture이면 실행하는 동기적 처리
     const navigate = useNavigate()
     const onOverlayClicked = () => {
         navigate(-1)
@@ -197,37 +197,37 @@ export function BigMovie ({type, data, scrollY}:{type:Types, data:IGetMoviesResu
                         layoutId={type + bigMovieMatch.params.movieId}
                         style={{ top: scrollY + 100 }}
                     >
-                        {clickedMovie && <>
+                        {detailData && <>
                             <BigCover
                             style={{
                                 backgroundImage:
                                     `
                                     linear-gradient(to top, rgba(0, 0, 0, 1) , rgba(0, 0, 0, 0)),
                                     linear-gradient(to right, rgba(0, 0, 0, 0.8), 50% , rgba(0, 0, 0, 0)),
-                                    url(${makeImagePath(clickedMovie.backdrop_path || clickedMovie.poster_path,"w500")})
+                                    url(${makeImagePath(detailData.backdrop_path || detailData.poster_path,"w500")})
                                     `
                                 }}
                             >
                               <BigTitle>
-                                  <h5>{clickedMovie.title}</h5>
+                                  <h5>{detailData.title}</h5>
                                   {detailData?.tagline !== ""? (
                                     <p>{detailData?.tagline}</p>
                                   ) :null}
                                   <TitleInfo>
-                                    <span> {clickedMovie.original_language}</span>
-                                    <p>{clickedMovie?.release_date}</p>
+                                    <span> {detailData.original_language}</span>
+                                    <p>{detailData?.release_date}</p>
                                   </TitleInfo>
                                   <TitleInfoBox>
-                                    <Rank>★ {clickedMovie?.vote_average}</Rank>
+                                    <Rank>★ {detailData?.vote_average.toFixed(1)}</Rank>
                                     {detailData?.genres.map((genres)=><Gengre key={genres.id}>#{genres.name}</Gengre>)}
                                   </TitleInfoBox>
                               </BigTitle>
                             </BigCover>
                             <BigInfo>
-                                  {clickedMovie.overview !== "" ? 
+                                  {detailData.overview !== "" ? 
                                       <BigOverview>
                                         <h4>줄거리</h4>
-                                        <p>{clickedMovie.overview}</p>
+                                        <p>{detailData.overview}</p>
                                       </BigOverview>
                                     : null
                                   }
@@ -239,11 +239,15 @@ export function BigMovie ({type, data, scrollY}:{type:Types, data:IGetMoviesResu
                                       <CastBox>
                                         {creditData?.cast.slice(offset*index, offset*index+offset).map((cast)=>
                                           <CastImgBox key={cast.id}>
-                                              <CastImg bgphoto={makeImagePath(cast.profile_path + "", "w200" || cast.profile_path + "w500")}/>
-                                              <CastName>
-                                                <span>{cast.name}</span>
-                                                <p>{cast.character}</p>
-                                              </CastName>
+                                              {cast.profile_path ? (
+                                                <>
+                                                    <CastImg bgphoto={makeImagePath(cast.profile_path + "", "w200" || cast.profile_path + "w500")}/>
+                                                    <CastName>
+                                                      <span>{cast.name}</span>
+                                                      <p>{cast.character}</p>
+                                                    </CastName>
+                                                </>
+                                              ) : null}
                                           </CastImgBox>
                                         )}
                                       </CastBox>

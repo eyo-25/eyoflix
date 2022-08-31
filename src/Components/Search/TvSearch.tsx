@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getSearchResult, ITvShowsResult } from "../api";
-import { makeImagePath } from "../utiles";
+import { getSearchResult, ITvShowsResult } from "../../Api/api";
+import { makeImagePath } from "../../Api/utiles";
 import { BoxVariants, Content, ContentImg, ContentInfo, ContentInfoBox, ContentRate, ContentTitle, NoSearch} from "./MovieSearch";
 
 function TvShowSearch() {

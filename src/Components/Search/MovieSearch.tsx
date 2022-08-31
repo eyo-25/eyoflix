@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion"
 import { useParams } from "react-router-dom";
 import styled from "styled-components"
-import { getSearchResult, IGetMoviesResult } from "../api";
-import { makeImagePath } from "../utiles";
+import { getSearchResult, IGetMoviesResult } from "../../Api/api";
+import { makeImagePath } from "../../Api/utiles";
 
 export const Content = styled(motion.div)`
     width: 220px;

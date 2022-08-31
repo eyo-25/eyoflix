@@ -2,29 +2,38 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, useScroll } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
-import { getTvShows, ITvShowsResult, } from "../api";
-import { TvTypes } from "../enums";
-import { makeImagePath } from "../utiles";
-import { BigTv } from "./BigTv";
+import { getTvShows, ITvShowsResult } from "../../Api/api";
+import { makeImagePath } from "../../Api/utiles";
+import { TvTypes } from "../../enums";
+import { BigTv } from "../Modal/BigTv";
 import { Before, Box, BoxContainer, BoxVariants, HoverBox, HoverDetailBtn, HoverOverView, HoverVariants, InfoBox, InfoRate, InfoTextBox, InfoTitle, Next, Row, rowVariants, SliderContainer, SliderTitle, SliderWrapper } from "./Slider";
 
 export function TvSlider({type}:{type:TvTypes}) {
 
-    const [offset,setOffset] = useState(6);
+    const [offset, setOffset] = useState(6);
+
     useEffect(()=>{
-      const resizeHandler = () => {
+      const handleResize = () => {
+        if(window.innerWidth <= 688){
+          setOffset(3);
+        }
         if(window.innerWidth > 688){
-          setOffset(4)
+          setOffset(4);
         }
         if(window.innerWidth > 992){
-          setOffset(5)
+          setOffset(5);
         }
         if(window.innerWidth > 1312){
-          setOffset(6)
+          setOffset(6);
         }
       }
-      resizeHandler();
-    },[window.innerWidth]);
+      handleResize();
+      window.addEventListener('resize', handleResize)
+      return()=>{
+        window.removeEventListener('resize', handleResize)
+      }
+    },[]);
+
     const { data } = useQuery<ITvShowsResult>(["TvShows", type], ()=>getTvShows(type))
     const bigTvShowMatch = useMatch(`/tvs/${type}/:tvId`)
     const [index, setIndex] = useState(0)

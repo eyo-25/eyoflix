@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, useScroll } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
-import { getTvShows, ITvShowsResult } from "../api";
-import { BigTv } from "../Components/BigTv";
+import { getTvShows, ITvShowsResult } from "../Api/api";
+import { BigTv } from "../Components/Modal/BigTv";
 import Loader from "../Components/Loader";
-import { TvSlider } from "../Components/TvSlide";
+import { TvSlider } from "../Components/Home/TvSlide";
 import { TvTypes} from "../enums";
-import { makeImagePath } from "../utiles";
+import { makeImagePath } from "../Api/utiles";
 import { Banner, BtnVariants, genreType, HomeDetailBtn, HomeGengre, HomeRank, Overview, TagBox, Title, Wrapper } from "./Home";
 
 const genres: genreType = {

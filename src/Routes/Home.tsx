@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { getMovies, IGetMoviesResult } from "../api";
-import { BigMovie } from "../Components/BigMovie";
+import { getMovies, IGetMoviesResult } from "../Api/api";
+import { BigMovie } from "../Components/Modal/BigMovie";
 import Loader from "../Components/Loader";
-import { MovieSlider } from "../Components/Slider";
+import { MovieSlider } from "../Components/Home/Slider";
 import { Types } from "../enums";
-import { makeImagePath } from "../utiles";
+import { makeImagePath } from "../Api/utiles";
 
 export type genreType = {
   [key: number]: string;
@@ -42,7 +42,7 @@ export const Wrapper = styled.div`
 
 export const Banner = styled.div<{ bgphoto: string }>`
   height: 90vh;
-  padding: 60px;
+  padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { Link, useMatch } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import MovieSearch from "../Components/MovieSearch";
-import TvShowSearch from "../Components/TvSearch";
+import MovieSearch from "../Components/Search/MovieSearch";
+import TvShowSearch from "../Components/Search/TvSearch";
 
 export const Container = styled.div`
   display: flex;

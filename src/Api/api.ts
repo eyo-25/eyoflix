@@ -1,4 +1,4 @@
-import { TvTypes, Types } from "./enums";
+import { TvTypes, Types } from "../enums";
 
 const API_KEY = "f96c0986771492bbe7f15346dc8aae25"
 const BASE_PATH = "https://api.themoviedb.org/3";
@@ -82,8 +82,10 @@ export interface IGetTvShowsDetail {
   poster_path: string;
   release_date: string;
   runtime: number;
-  title: string;
+  name: string;
   tagline: string;
+  first_air_date: string;
+  vote_average: number;
 }
 
 export interface IGetMovieDetail {
@@ -102,9 +104,10 @@ export interface IGetMovieDetail {
   overview: string;
   popularity: number;
   poster_path: string;
-  first_air_date: string;
-  name: string;
+  vote_average: number;
   tagline: string;
+  release_date:string;
+  title: string;
 }
 
 export interface ICredits {
